@@ -1,0 +1,2457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WebCraft — Professional Website Development</title>
+  <meta name="description" content="WebCraft creates modern, responsive and professional websites starting from 10 USDT." />
+  <meta property="og:title" content="WebCraft — Professional Website Development" />
+  <meta property="og:description" content="WebCraft creates modern, responsive and professional websites starting from 10 USDT." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" type="image/jpeg" href="logo.jpg" />
+  <style>
+    /* ===========================
+       RESET & BASE
+    =========================== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #050a14;
+      --bg2: #080f1e;
+      --bg3: #0c1628;
+      --accent: #3b82f6;
+      --accent2: #8b5cf6;
+      --accent3: #06b6d4;
+      --grad: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      --grad2: linear-gradient(135deg, #06b6d4, #3b82f6);
+      --glass: rgba(255,255,255,0.04);
+      --glass-border: rgba(255,255,255,0.08);
+      --text: #f1f5f9;
+      --text2: #94a3b8;
+      --text3: #64748b;
+      --card: rgba(15,25,50,0.7);
+      --radius: 16px;
+      --radius-sm: 10px;
+      --shadow: 0 8px 32px rgba(0,0,0,0.4);
+      --shadow-glow: 0 0 30px rgba(59,130,246,0.15);
+      --transition: 0.3s cubic-bezier(0.4,0,0.2,1);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+    body.loading-active { overflow: hidden; }
+    a { text-decoration: none; color: inherit; }
+    ul { list-style: none; }
+    img { max-width: 100%; display: block; }
+    button { cursor: pointer; border: none; outline: none; font-family: inherit; }
+    input, textarea, select { font-family: inherit; }
+
+    /* ===========================
+       SCROLLBAR
+    =========================== */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: var(--bg); }
+    ::-webkit-scrollbar-thumb { background: var(--accent); border-radius: 3px; }
+
+    /* ===========================
+       CUSTOM CURSOR
+    =========================== */
+    .cursor-dot {
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 99999;
+      transform: translate(-50%,-50%);
+      transition: width 0.2s, height 0.2s, background 0.2s;
+    }
+    .cursor-ring {
+      width: 32px; height: 32px;
+      border: 1.5px solid rgba(59,130,246,0.5);
+      border-radius: 50%;
+      position: fixed;
+      top: 0; left: 0;
+      pointer-events: none;
+      z-index: 99998;
+      transform: translate(-50%,-50%);
+      transition: transform 0.12s ease, width 0.25s, height 0.25s, border-color 0.25s;
+    }
+    .cursor-ring.hovered { width: 48px; height: 48px; border-color: var(--accent2); }
+    @media (pointer: coarse) { .cursor-dot, .cursor-ring { display: none; } }
+
+    /* ===========================
+       LOADING SCREEN
+    =========================== */
+    #loading-screen {
+      position: fixed; inset: 0;
+      background: var(--bg);
+      z-index: 99990;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 28px;
+      transition: opacity 0.7s ease, visibility 0.7s ease;
+    }
+    #loading-screen.hidden { opacity: 0; visibility: hidden; }
+    .loading-logo-wrap {
+      position: relative;
+      width: 100px; height: 100px;
+    }
+    .loading-logo-wrap::before {
+      content: '';
+      position: absolute; inset: -8px;
+      border-radius: 50%;
+      background: var(--grad);
+      opacity: 0.3;
+      animation: pulse-ring 2s ease-in-out infinite;
+    }
+    .loading-logo {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      position: relative;
+      z-index: 1;
+      border: 2px solid rgba(59,130,246,0.4);
+      box-shadow: 0 0 30px rgba(59,130,246,0.3);
+      animation: logo-float 3s ease-in-out infinite;
+    }
+    .loading-brand {
+      font-size: 2rem;
+      font-weight: 800;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      letter-spacing: 2px;
+    }
+    .loading-tagline {
+      font-size: 0.85rem;
+      color: var(--text2);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+    .loading-bar-wrap {
+      width: 200px;
+      height: 3px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .loading-bar {
+      height: 100%;
+      background: var(--grad);
+      border-radius: 3px;
+      animation: loading-fill 2s ease-in-out forwards;
+      box-shadow: 0 0 10px rgba(59,130,246,0.6);
+    }
+    .loading-dots {
+      display: flex; gap: 8px;
+    }
+    .loading-dots span {
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      animation: dot-bounce 1.2s ease-in-out infinite;
+    }
+    .loading-dots span:nth-child(2) { animation-delay: 0.2s; background: var(--accent2); }
+    .loading-dots span:nth-child(3) { animation-delay: 0.4s; background: var(--accent3); }
+    @keyframes loading-fill { from { width: 0; } to { width: 100%; } }
+    @keyframes dot-bounce { 0%,80%,100%{transform:translateY(0);} 40%{transform:translateY(-10px);} }
+    @keyframes pulse-ring { 0%,100%{transform:scale(1);opacity:0.3;} 50%{transform:scale(1.15);opacity:0.5;} }
+    @keyframes logo-float { 0%,100%{transform:translateY(0);} 50%{transform:translateY(-8px);} }
+
+    /* ===========================
+       NAVBAR
+    =========================== */
+    #navbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 1000;
+      padding: 18px 0;
+      transition: var(--transition);
+    }
+    #navbar.scrolled {
+      padding: 10px 0;
+      background: rgba(5,10,20,0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.3);
+    }
+    .nav-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 1.4rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+    .nav-logo img {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 1.5px solid rgba(59,130,246,0.4);
+    }
+    .nav-logo span {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .nav-links {
+      display: flex; align-items: center; gap: 4px;
+    }
+    .nav-links a {
+      padding: 8px 14px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text2);
+      border-radius: 8px;
+      transition: var(--transition);
+      position: relative;
+    }
+    .nav-links a::after {
+      content: '';
+      position: absolute; bottom: 2px; left: 50%; right: 50%;
+      height: 2px;
+      background: var(--grad);
+      border-radius: 2px;
+      transition: left 0.3s, right 0.3s;
+    }
+    .nav-links a:hover, .nav-links a.active {
+      color: var(--text);
+      background: rgba(59,130,246,0.08);
+    }
+    .nav-links a:hover::after, .nav-links a.active::after { left: 14px; right: 14px; }
+    .nav-cta {
+      padding: 10px 22px;
+      background: var(--grad);
+      color: #fff;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: var(--transition);
+      box-shadow: 0 4px 20px rgba(59,130,246,0.3);
+      white-space: nowrap;
+    }
+    .nav-cta:hover { transform: translateY(-2px); box-shadow: 0 8px 28px rgba(59,130,246,0.45); }
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      padding: 8px;
+      border-radius: 8px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      transition: var(--transition);
+    }
+    .hamburger span {
+      display: block;
+      width: 22px; height: 2px;
+      background: var(--text);
+      border-radius: 2px;
+      transition: var(--transition);
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; transform: scaleX(0); }
+    .hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+    .mobile-menu {
+      display: none;
+      flex-direction: column;
+      gap: 4px;
+      padding: 16px 24px 20px;
+      background: rgba(5,10,20,0.96);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      animation: slideDown 0.3s ease;
+    }
+    .mobile-menu.open { display: flex; }
+    .mobile-menu a {
+      padding: 12px 16px;
+      color: var(--text2);
+      font-size: 1rem;
+      font-weight: 500;
+      border-radius: 10px;
+      transition: var(--transition);
+    }
+    .mobile-menu a:hover { color: var(--text); background: rgba(59,130,246,0.1); }
+    .mobile-menu .nav-cta { text-align: center; margin-top: 8px; color: #fff; }
+    @keyframes slideDown { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .nav-cta.desktop-cta { display: none; }
+      .hamburger { display: flex; }
+    }
+
+    /* ===========================
+       HERO SECTION
+    =========================== */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      padding: 120px 24px 80px;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(59,130,246,0.12) 0%, transparent 60%),
+                  radial-gradient(ellipse 60% 40% at 80% 80%, rgba(139,92,246,0.1) 0%, transparent 50%),
+                  var(--bg);
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(59,130,246,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(59,130,246,0.05) 1px, transparent 1px);
+      background-size: 60px 60px;
+      animation: grid-move 20s linear infinite;
+    }
+    @keyframes grid-move { from { background-position: 0 0; } to { background-position: 60px 60px; } }
+    .hero-particles { position: absolute; inset: 0; overflow: hidden; }
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      animation: float-particle linear infinite;
+      opacity: 0;
+    }
+    @keyframes float-particle {
+      0% { transform: translateY(100vh) scale(0); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translateY(-10vh) scale(1); opacity: 0; }
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      max-width: 780px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 18px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 50px;
+      font-size: 0.78rem;
+      color: var(--text2);
+      letter-spacing: 0.5px;
+      margin-bottom: 28px;
+      backdrop-filter: blur(10px);
+    }
+    .hero-badge .dot {
+      width: 6px; height: 6px;
+      background: #22c55e;
+      border-radius: 50%;
+      animation: pulse-green 2s ease-in-out infinite;
+    }
+    @keyframes pulse-green { 0%,100%{box-shadow:0 0 0 0 rgba(34,197,94,0.5);} 50%{box-shadow:0 0 0 6px rgba(34,197,94,0);} }
+    .hero-typing-wrap {
+      font-size: clamp(1rem, 3vw, 1.2rem);
+      color: var(--accent3);
+      font-weight: 600;
+      margin-bottom: 16px;
+      min-height: 2em;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0;
+    }
+    .typing-text { color: var(--accent3); }
+    .cursor-blink {
+      display: inline-block;
+      width: 2px; height: 1.1em;
+      background: var(--accent3);
+      margin-left: 2px;
+      animation: blink 0.7s step-end infinite;
+      vertical-align: middle;
+    }
+    @keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0;} }
+    .hero-h1 {
+      font-size: clamp(2.2rem, 6vw, 4rem);
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 22px;
+      letter-spacing: -1px;
+    }
+    .hero-h1 .highlight {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(1rem, 2.5vw, 1.15rem);
+      color: var(--text2);
+      max-width: 560px;
+      margin: 0 auto 36px;
+      line-height: 1.7;
+    }
+    .hero-btns {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .btn-primary {
+      padding: 14px 32px;
+      background: var(--grad);
+      color: #fff;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 700;
+      transition: var(--transition);
+      box-shadow: 0 6px 24px rgba(59,130,246,0.35);
+      position: relative;
+      overflow: hidden;
+    }
+    .btn-primary::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: rgba(255,255,255,0.1);
+      transform: translateX(-100%);
+      transition: transform 0.4s;
+    }
+    .btn-primary:hover::after { transform: translateX(0); }
+    .btn-primary:hover { transform: translateY(-3px); box-shadow: 0 12px 36px rgba(59,130,246,0.5); }
+    .btn-primary:active { transform: translateY(-1px); }
+    .btn-secondary {
+      padding: 14px 32px;
+      background: var(--glass);
+      color: var(--text);
+      border: 1px solid var(--glass-border);
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      transition: var(--transition);
+      backdrop-filter: blur(10px);
+    }
+    .btn-secondary:hover { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); transform: translateY(-3px); }
+    .hero-scroll-indicator {
+      position: absolute;
+      bottom: 36px; left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+      color: var(--text3);
+      font-size: 0.75rem;
+      animation: bounce-down 2s ease-in-out infinite;
+    }
+    .hero-scroll-indicator .scroll-arrow {
+      width: 20px; height: 20px;
+      border-right: 2px solid var(--text3);
+      border-bottom: 2px solid var(--text3);
+      transform: rotate(45deg);
+    }
+    @keyframes bounce-down { 0%,100%{transform:translateX(-50%) translateY(0);} 50%{transform:translateX(-50%) translateY(8px);} }
+
+    /* ===========================
+       SECTION COMMONS
+    =========================== */
+    section { padding: 90px 24px; }
+    .container { max-width: 1200px; margin: 0 auto; }
+    .section-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.2);
+      border-radius: 50px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--accent);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 800;
+      line-height: 1.2;
+      margin-bottom: 14px;
+      letter-spacing: -0.5px;
+    }
+    .section-title span {
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .section-sub {
+      color: var(--text2);
+      font-size: 1.05rem;
+      max-width: 560px;
+      line-height: 1.7;
+    }
+    .section-head { margin-bottom: 56px; }
+    .section-head.center { text-align: center; }
+    .section-head.center .section-sub { margin: 0 auto; }
+
+    /* ===========================
+       REVEAL ANIMATIONS
+    =========================== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .reveal.from-left { transform: translateX(-50px); }
+    .reveal.from-right { transform: translateX(50px); }
+    .reveal.scale { transform: scale(0.9); }
+    .reveal.visible { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) {
+      .reveal { opacity: 1; transform: none; transition: none; }
+    }
+
+    /* ===========================
+       SERVICES
+    =========================== */
+    #services { background: var(--bg2); }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    .service-card {
+      background: var(--card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 36px 30px;
+      transition: var(--transition);
+      cursor: default;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+    .service-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--grad);
+      transform: scaleX(0);
+      transition: transform 0.4s ease;
+      transform-origin: left;
+    }
+    .service-card:hover::before { transform: scaleX(1); }
+    .service-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(59,130,246,0.25);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4), 0 0 30px rgba(59,130,246,0.1);
+    }
+    .service-icon {
+      width: 58px; height: 58px;
+      background: rgba(59,130,246,0.1);
+      border: 1px solid rgba(59,130,246,0.2);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      margin-bottom: 22px;
+      transition: var(--transition);
+    }
+    .service-card:hover .service-icon {
+      background: rgba(59,130,246,0.2);
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 8px 20px rgba(59,130,246,0.2);
+    }
+    .service-card h3 { font-size: 1.25rem; font-weight: 700; margin-bottom: 12px; }
+    .service-card p { color: var(--text2); font-size: 0.95rem; line-height: 1.7; margin-bottom: 18px; }
+    .service-tags {
+      display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px;
+    }
+    .service-tags span {
+      padding: 4px 10px;
+      background: rgba(59,130,246,0.08);
+      border: 1px solid rgba(59,130,246,0.15);
+      border-radius: 50px;
+      font-size: 0.75rem;
+      color: var(--text2);
+    }
+    .btn-outline {
+      padding: 10px 22px;
+      border: 1px solid rgba(59,130,246,0.4);
+      color: var(--accent);
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      background: transparent;
+      transition: var(--transition);
+    }
+    .btn-outline:hover { background: var(--accent); color: #fff; box-shadow: 0 4px 16px rgba(59,130,246,0.3); }
+
+    /* ===========================
+       PRICING
+    =========================== */
+    #plans { background: var(--bg); }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+      align-items: start;
+    }
+    .price-card {
+      background: var(--card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 38px 32px;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+    }
+    .price-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 24px 60px rgba(0,0,0,0.4), 0 0 40px rgba(59,130,246,0.1);
+      border-color: rgba(59,130,246,0.2);
+    }
+    .price-card.popular {
+      border-color: rgba(59,130,246,0.4);
+      background: linear-gradient(135deg, rgba(15,25,55,0.95), rgba(20,30,65,0.95));
+      box-shadow: 0 0 40px rgba(59,130,246,0.15), 0 8px 32px rgba(0,0,0,0.4);
+      transform: scale(1.03);
+    }
+    .price-card.popular:hover { transform: scale(1.03) translateY(-8px); }
+    .popular-badge {
+      position: absolute; top: 16px; right: 16px;
+      padding: 5px 14px;
+      background: var(--grad);
+      border-radius: 50px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+    .price-card-top {
+      margin-bottom: 28px;
+      padding-bottom: 28px;
+      border-bottom: 1px solid var(--glass-border);
+    }
+    .price-card h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+    .price-amount {
+      display: flex; align-items: baseline; gap: 4px;
+      margin-bottom: 10px;
+    }
+    .price-amount .amount {
+      font-size: 3rem;
+      font-weight: 900;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+    }
+    .price-amount .currency {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .price-card p { color: var(--text2); font-size: 0.9rem; line-height: 1.6; }
+    .price-features { list-style: none; margin-bottom: 30px; display: flex; flex-direction: column; gap: 10px; }
+    .price-features li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 0.88rem;
+      color: var(--text2);
+      line-height: 1.5;
+    }
+    .price-features li::before {
+      content: '✓';
+      width: 18px; height: 18px;
+      min-width: 18px;
+      background: rgba(34,197,94,0.15);
+      border: 1px solid rgba(34,197,94,0.3);
+      border-radius: 50%;
+      color: #22c55e;
+      font-size: 0.7rem;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800;
+      margin-top: 1px;
+    }
+    .plan-btn {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 700;
+      transition: var(--transition);
+    }
+    .plan-btn.primary {
+      background: var(--grad);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(59,130,246,0.3);
+    }
+    .plan-btn.primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(59,130,246,0.45); }
+    .plan-btn.secondary {
+      background: var(--glass);
+      color: var(--text);
+      border: 1px solid var(--glass-border);
+    }
+    .plan-btn.secondary:hover { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); transform: translateY(-2px); }
+
+    /* ===========================
+       PORTFOLIO
+    =========================== */
+    #portfolio { background: var(--bg2); }
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 24px;
+    }
+    .portfolio-card {
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1px solid var(--glass-border);
+      transition: var(--transition);
+      cursor: pointer;
+      background: var(--card);
+    }
+    .portfolio-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(59,130,246,0.3);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.4), 0 0 30px rgba(59,130,246,0.1);
+    }
+    .portfolio-img-wrap {
+      position: relative;
+      overflow: hidden;
+      height: 220px;
+    }
+    .portfolio-img-wrap img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform 0.5s ease;
+    }
+    .portfolio-card:hover .portfolio-img-wrap img { transform: scale(1.08); }
+    .portfolio-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(5,10,20,0.9), transparent 60%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 24px;
+    }
+    .portfolio-card:hover .portfolio-overlay { opacity: 1; }
+    .portfolio-overlay button {
+      padding: 10px 24px;
+      background: var(--grad);
+      color: #fff;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transform: translateY(10px);
+      transition: transform 0.3s 0.1s ease, box-shadow 0.3s;
+      box-shadow: 0 4px 16px rgba(59,130,246,0.4);
+    }
+    .portfolio-card:hover .portfolio-overlay button { transform: translateY(0); }
+    .portfolio-overlay button:hover { box-shadow: 0 8px 24px rgba(59,130,246,0.5); }
+    .portfolio-info {
+      padding: 20px 22px;
+    }
+    .portfolio-info h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 6px; }
+    .portfolio-info p { color: var(--text2); font-size: 0.88rem; line-height: 1.5; }
+    .portfolio-badge {
+      display: inline-block;
+      padding: 4px 12px;
+      border-radius: 50px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .badge-simple { background: rgba(6,182,212,0.1); color: var(--accent3); border: 1px solid rgba(6,182,212,0.2); }
+    .badge-pro { background: rgba(59,130,246,0.1); color: var(--accent); border: 1px solid rgba(59,130,246,0.2); }
+    .badge-biz { background: rgba(139,92,246,0.1); color: var(--accent2); border: 1px solid rgba(139,92,246,0.2); }
+
+    /* ===========================
+       ABOUT
+    =========================== */
+    #about { background: var(--bg); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    @media (max-width: 768px) { .about-grid { grid-template-columns: 1fr; gap: 40px; } }
+    .about-visual {
+      position: relative;
+    }
+    .about-card-main {
+      background: var(--card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 36px;
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+    .about-card-main::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--grad);
+    }
+    .about-avatar {
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(59,130,246,0.4);
+      margin-bottom: 16px;
+      box-shadow: 0 0 20px rgba(59,130,246,0.2);
+    }
+    .about-card-main h3 { font-size: 1.2rem; font-weight: 700; margin-bottom: 6px; }
+    .about-card-main .role { color: var(--accent3); font-size: 0.85rem; font-weight: 600; margin-bottom: 16px; }
+    .about-card-main p { color: var(--text2); font-size: 0.9rem; line-height: 1.7; }
+    .about-floating {
+      position: absolute; bottom: -16px; right: -16px;
+      background: var(--grad);
+      border-radius: 12px;
+      padding: 14px 18px;
+      box-shadow: 0 8px 24px rgba(59,130,246,0.3);
+    }
+    .about-floating p { color: #fff; font-size: 0.8rem; font-weight: 600; }
+    .about-content h2 { font-size: clamp(1.6rem, 3.5vw, 2.4rem); font-weight: 800; margin-bottom: 16px; letter-spacing: -0.5px; }
+    .about-content h2 span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .about-content p { color: var(--text2); font-size: 0.95rem; line-height: 1.8; margin-bottom: 16px; }
+    .about-features { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 24px; }
+    .about-feature {
+      display: flex; align-items: center; gap: 10px;
+      padding: 12px 14px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      font-size: 0.88rem;
+      color: var(--text2);
+      transition: var(--transition);
+    }
+    .about-feature:hover { border-color: rgba(59,130,246,0.3); color: var(--text); background: rgba(59,130,246,0.06); }
+    .about-feature span:first-child { font-size: 1.1rem; }
+
+    /* ===========================
+       PROCESS
+    =========================== */
+    #process { background: var(--bg2); }
+    .process-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 24px;
+      position: relative;
+    }
+    .process-card {
+      background: var(--card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 32px 26px;
+      text-align: center;
+      transition: var(--transition);
+      backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+    .process-card:hover {
+      transform: translateY(-6px);
+      border-color: rgba(59,130,246,0.3);
+      box-shadow: var(--shadow-glow);
+    }
+    .process-num {
+      font-size: 3.5rem;
+      font-weight: 900;
+      background: var(--grad);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      line-height: 1;
+      margin-bottom: 16px;
+      opacity: 0.5;
+    }
+    .process-icon {
+      font-size: 2rem;
+      margin-bottom: 14px;
+    }
+    .process-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: 10px; }
+    .process-card p { color: var(--text2); font-size: 0.88rem; line-height: 1.6; }
+
+    /* ===========================
+       FAQ
+    =========================== */
+    #faq { background: var(--bg); }
+    .faq-list { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 12px; }
+    .faq-item {
+      background: var(--card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      transition: var(--transition);
+      backdrop-filter: blur(10px);
+    }
+    .faq-item:hover { border-color: rgba(59,130,246,0.2); }
+    .faq-item.open { border-color: rgba(59,130,246,0.3); }
+    .faq-question {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 22px;
+      cursor: pointer;
+      user-select: none;
+      gap: 16px;
+    }
+    .faq-question h4 { font-size: 0.95rem; font-weight: 600; flex: 1; }
+    .faq-icon {
+      width: 28px; height: 28px;
+      min-width: 28px;
+      border: 1px solid var(--glass-border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      color: var(--accent);
+      transition: transform 0.3s ease;
+    }
+    .faq-item.open .faq-icon { transform: rotate(45deg); background: rgba(59,130,246,0.1); }
+    .faq-answer {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.4s ease, padding 0.3s;
+      padding: 0 22px;
+    }
+    .faq-item.open .faq-answer { max-height: 300px; padding: 0 22px 18px; }
+    .faq-answer p { color: var(--text2); font-size: 0.9rem; line-height: 1.7; }
+
+    /* ===========================
+       CONTACT
+    =========================== */
+    #contact { background: var(--bg2); }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.4fr;
+      gap: 48px;
+      align-items: start;
+    }
+    @media (max-width: 900px) { .contact-grid { grid-template-columns: 1fr; gap: 36px; } }
+    .contact-info h2 { font-size: clamp(1.6rem, 3.5vw, 2.3rem); font-weight: 800; margin-bottom: 14px; }
+    .contact-info h2 span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .contact-info p { color: var(--text2); font-size: 0.95rem; line-height: 1.7; margin-bottom: 28px; }
+    .contact-details { display: flex; flex-direction: column; gap: 14px; }
+    .contact-detail {
+      display: flex; align-items: center; gap: 14px;
+      padding: 14px 16px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+    }
+    .contact-detail .icon {
+      width: 40px; height: 40px;
+      background: rgba(59,130,246,0.1);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .contact-detail strong { display: block; font-size: 0.85rem; color: var(--text); }
+    .contact-detail span { font-size: 0.8rem; color: var(--text2); }
+    .contact-form {
+      background: var(--card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 36px;
+      backdrop-filter: blur(10px);
+    }
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text2);
+      margin-bottom: 8px;
+    }
+    .form-group label span { color: var(--accent); }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%;
+      padding: 12px 16px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      color: var(--text);
+      font-size: 0.9rem;
+      transition: var(--transition);
+      outline: none;
+      -webkit-appearance: none;
+    }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: var(--text3); }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus {
+      border-color: rgba(59,130,246,0.5);
+      background: rgba(59,130,246,0.05);
+      box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    }
+    .form-group select option { background: #0c1628; color: var(--text); }
+    .form-group textarea { resize: vertical; min-height: 110px; }
+    .selected-plan-display {
+      padding: 10px 14px;
+      background: rgba(59,130,246,0.08);
+      border: 1px solid rgba(59,130,246,0.2);
+      border-radius: 8px;
+      font-size: 0.85rem;
+      color: var(--accent);
+      font-weight: 600;
+      margin-bottom: 18px;
+      display: none;
+    }
+    .selected-plan-display.show { display: block; }
+    .send-btn {
+      width: 100%;
+      padding: 15px;
+      background: var(--grad);
+      color: #fff;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 700;
+      transition: var(--transition);
+      box-shadow: 0 4px 20px rgba(59,130,246,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .send-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(59,130,246,0.45); }
+
+    /* ===========================
+       FOOTER
+    =========================== */
+    footer {
+      background: var(--bg3);
+      border-top: 1px solid var(--glass-border);
+      padding: 60px 24px 30px;
+    }
+    .footer-container { max-width: 1200px; margin: 0 auto; }
+    .footer-main {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+    @media (max-width: 768px) { .footer-main { grid-template-columns: 1fr; gap: 32px; } }
+    .footer-brand .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .footer-brand .logo img { width: 36px; height: 36px; border-radius: 50%; object-fit: cover; border: 1.5px solid rgba(59,130,246,0.4); }
+    .footer-brand .logo span { font-size: 1.3rem; font-weight: 800; background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .footer-brand p { color: var(--text2); font-size: 0.9rem; line-height: 1.7; margin-bottom: 18px; }
+    .footer-social a {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 38px; height: 38px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 50%;
+      color: var(--text2);
+      font-size: 1rem;
+      transition: var(--transition);
+    }
+    .footer-social a:hover { background: rgba(59,130,246,0.1); border-color: rgba(59,130,246,0.3); color: var(--accent); transform: translateY(-3px); }
+    .footer-col h4 { font-size: 0.95rem; font-weight: 700; margin-bottom: 18px; color: var(--text); }
+    .footer-col ul { display: flex; flex-direction: column; gap: 10px; }
+    .footer-col ul li a { color: var(--text2); font-size: 0.88rem; transition: var(--transition); }
+    .footer-col ul li a:hover { color: var(--accent); padding-left: 4px; }
+    .footer-contact { display: flex; flex-direction: column; gap: 10px; }
+    .footer-contact a {
+      display: flex; align-items: center; gap: 10px;
+      color: var(--text2); font-size: 0.88rem;
+      transition: var(--transition);
+    }
+    .footer-contact a:hover { color: var(--accent); }
+    .footer-bottom {
+      padding-top: 24px;
+      border-top: 1px solid var(--glass-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-bottom p { color: var(--text3); font-size: 0.82rem; }
+    .admin-link {
+      color: var(--text3);
+      font-size: 0.75rem;
+      padding: 4px 10px;
+      border-radius: 4px;
+      transition: var(--transition);
+      border: 1px solid transparent;
+    }
+    .admin-link:hover { color: var(--text2); border-color: var(--glass-border); }
+
+    /* ===========================
+       FLOATING WHATSAPP
+    =========================== */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 28px; right: 28px;
+      z-index: 900;
+    }
+    .whatsapp-btn {
+      width: 58px; height: 58px;
+      background: #25d366;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.6rem;
+      color: #fff;
+      box-shadow: 0 6px 24px rgba(37,211,102,0.4);
+      transition: var(--transition);
+      position: relative;
+      animation: wa-pulse 3s ease-in-out infinite;
+    }
+    .whatsapp-btn:hover { transform: scale(1.12); box-shadow: 0 10px 30px rgba(37,211,102,0.5); animation: none; }
+    @keyframes wa-pulse {
+      0%,100% { box-shadow: 0 6px 24px rgba(37,211,102,0.4), 0 0 0 0 rgba(37,211,102,0.3); }
+      50% { box-shadow: 0 6px 24px rgba(37,211,102,0.4), 0 0 0 14px rgba(37,211,102,0); }
+    }
+    .wa-tooltip {
+      position: absolute;
+      right: 70px; top: 50%;
+      transform: translateY(-50%);
+      background: var(--bg3);
+      border: 1px solid var(--glass-border);
+      color: var(--text);
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 8px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      box-shadow: var(--shadow);
+    }
+    .wa-tooltip::after {
+      content: '';
+      position: absolute;
+      left: 100%; top: 50%;
+      transform: translateY(-50%);
+      border: 6px solid transparent;
+      border-left-color: var(--bg3);
+    }
+    .whatsapp-float:hover .wa-tooltip { opacity: 1; }
+
+    /* ===========================
+       ADMIN OVERLAY
+    =========================== */
+    #admin-overlay {
+      position: fixed; inset: 0;
+      z-index: 99000;
+      background: rgba(5,10,20,0.97);
+      backdrop-filter: blur(20px);
+      display: none;
+      overflow-y: auto;
+      padding: 40px 20px;
+    }
+    #admin-overlay.show { display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+    .admin-login-box {
+      background: var(--card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 48px 40px;
+      width: 100%;
+      max-width: 420px;
+      margin: auto;
+      position: relative;
+      overflow: hidden;
+    }
+    .admin-login-box::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 3px;
+      background: var(--grad);
+    }
+    .admin-login-box h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: 6px; }
+    .admin-login-box h2 span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .admin-login-box p { color: var(--text2); font-size: 0.88rem; margin-bottom: 28px; }
+    .admin-form .form-group { margin-bottom: 16px; }
+    .admin-btn {
+      width: 100%;
+      padding: 14px;
+      background: var(--grad);
+      color: #fff;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      transition: var(--transition);
+      margin-top: 8px;
+    }
+    .admin-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(59,130,246,0.3); }
+    .admin-error {
+      color: #f87171;
+      font-size: 0.85rem;
+      margin-bottom: 14px;
+      display: none;
+      padding: 10px 14px;
+      background: rgba(248,113,113,0.08);
+      border: 1px solid rgba(248,113,113,0.2);
+      border-radius: 8px;
+    }
+    .admin-error.show { display: block; }
+    .admin-close-btn {
+      position: absolute; top: 16px; right: 16px;
+      width: 32px; height: 32px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 50%;
+      color: var(--text2);
+      font-size: 1rem;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .admin-close-btn:hover { background: rgba(248,113,113,0.1); color: #f87171; border-color: rgba(248,113,113,0.3); }
+
+    /* Admin Dashboard */
+    .admin-dashboard { width: 100%; max-width: 960px; }
+    .admin-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+    .admin-header h1 { font-size: 1.8rem; font-weight: 800; }
+    .admin-header h1 span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .admin-header-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+    .admin-save-btn {
+      padding: 10px 22px;
+      background: var(--grad);
+      color: #fff;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      transition: var(--transition);
+    }
+    .admin-save-btn:hover { transform: translateY(-2px); }
+    .admin-reset-btn {
+      padding: 10px 22px;
+      background: rgba(248,113,113,0.1);
+      color: #f87171;
+      border: 1px solid rgba(248,113,113,0.3);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .admin-reset-btn:hover { background: rgba(248,113,113,0.2); }
+    .admin-logout-btn {
+      padding: 10px 22px;
+      background: var(--glass);
+      color: var(--text2);
+      border: 1px solid var(--glass-border);
+      border-radius: 10px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: var(--transition);
+    }
+    .admin-logout-btn:hover { border-color: rgba(59,130,246,0.3); color: var(--text); }
+    .admin-notice {
+      background: rgba(251,191,36,0.08);
+      border: 1px solid rgba(251,191,36,0.2);
+      border-radius: 10px;
+      padding: 14px 18px;
+      color: #fbbf24;
+      font-size: 0.85rem;
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+    .admin-tabs {
+      display: flex; gap: 8px; flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .admin-tab {
+      padding: 8px 18px;
+      background: var(--glass);
+      border: 1px solid var(--glass-border);
+      border-radius: 50px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text2);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .admin-tab.active, .admin-tab:hover {
+      background: rgba(59,130,246,0.15);
+      border-color: rgba(59,130,246,0.4);
+      color: var(--accent);
+    }
+    .admin-panel {
+      display: none;
+    }
+    .admin-panel.show { display: block; }
+    .admin-section-card {
+      background: var(--card);
+      border: 1px solid var(--glass-border);
+      border-radius: var(--radius);
+      padding: 28px;
+      margin-bottom: 20px;
+      backdrop-filter: blur(10px);
+    }
+    .admin-section-card h3 {
+      font-size: 1rem; font-weight: 700;
+      margin-bottom: 18px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--glass-border);
+      color: var(--accent);
+    }
+    .admin-fields { display: flex; flex-direction: column; gap: 14px; }
+    .admin-field label { display: block; font-size: 0.82rem; font-weight: 600; color: var(--text2); margin-bottom: 6px; }
+    .admin-field input,
+    .admin-field textarea {
+      width: 100%;
+      padding: 10px 14px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--glass-border);
+      border-radius: 8px;
+      color: var(--text);
+      font-size: 0.88rem;
+      outline: none;
+      transition: var(--transition);
+    }
+    .admin-field input:focus, .admin-field textarea:focus {
+      border-color: rgba(59,130,246,0.5);
+      background: rgba(59,130,246,0.04);
+    }
+    .admin-field textarea { min-height: 80px; resize: vertical; }
+    .admin-features-list { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+    .admin-feature-item {
+      display: flex; gap: 8px; align-items: center;
+    }
+    .admin-feature-item input { flex: 1; }
+    .remove-feature-btn {
+      width: 28px; height: 28px;
+      background: rgba(248,113,113,0.1);
+      border: 1px solid rgba(248,113,113,0.2);
+      border-radius: 6px;
+      color: #f87171;
+      font-size: 0.9rem;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: var(--transition);
+    }
+    .remove-feature-btn:hover { background: rgba(248,113,113,0.2); }
+    .add-feature-btn {
+      padding: 7px 14px;
+      background: rgba(59,130,246,0.08);
+      border: 1px dashed rgba(59,130,246,0.3);
+      border-radius: 8px;
+      color: var(--accent);
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      text-align: center;
+      margin-top: 4px;
+    }
+    .add-feature-btn:hover { background: rgba(59,130,246,0.15); }
+    .admin-success {
+      position: fixed;
+      bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(20px);
+      background: rgba(34,197,94,0.15);
+      border: 1px solid rgba(34,197,94,0.3);
+      color: #22c55e;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 0.9rem;
+      font-weight: 600;
+      opacity: 0;
+      transition: all 0.4s ease;
+      z-index: 99999;
+      pointer-events: none;
+    }
+    .admin-success.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ===========================
+       HERO GLOW ORBS
+    =========================== */
+    .hero-orb {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      pointer-events: none;
+    }
+    .hero-orb-1 {
+      width: 500px; height: 500px;
+      background: rgba(59,130,246,0.08);
+      top: -100px; left: -100px;
+      animation: orb-drift 12s ease-in-out infinite;
+    }
+    .hero-orb-2 {
+      width: 400px; height: 400px;
+      background: rgba(139,92,246,0.07);
+      bottom: -80px; right: -80px;
+      animation: orb-drift 15s ease-in-out infinite reverse;
+    }
+    @keyframes orb-drift { 0%,100%{transform:translate(0,0);} 33%{transform:translate(30px,-20px);} 66%{transform:translate(-20px,30px);} }
+
+    /* ===========================
+       UTILITIES
+    =========================== */
+    .mt-4 { margin-top: 16px; }
+    .text-center { text-align: center; }
+    .gradient-text { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  </style>
+</head>
+<body class="loading-active">
+
+<!-- CUSTOM CURSOR -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- LOADING SCREEN -->
+<div id="loading-screen">
+  <div class="loading-logo-wrap">
+    <img src="logo.jpg" alt="WebCraft Logo" class="loading-logo" />
+  </div>
+  <div class="loading-brand">WebCraft</div>
+  <div class="loading-tagline">Premium Web Development</div>
+  <div class="loading-bar-wrap">
+    <div class="loading-bar"></div>
+  </div>
+  <div class="loading-dots">
+    <span></span><span></span><span></span>
+  </div>
+</div>
+
+<!-- NAVBAR -->
+<nav id="navbar" role="navigation" aria-label="Main navigation">
+  <div class="nav-container">
+    <a href="#hero" class="nav-logo" aria-label="WebCraft Home">
+      <img src="logo.jpg" alt="WebCraft Logo" />
+      <span>WebCraft</span>
+    </a>
+    <ul class="nav-links" role="list">
+      <li><a href="#hero" class="active">Home</a></li>
+      <li><a href="#services">Services</a></li>
+      <li><a href="#plans">Plans</a></li>
+      <li><a href="#portfolio">Portfolio</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+    <a href="#contact" class="nav-cta desktop-cta" aria-label="Get Your Website">Get Your Website</a>
+    <button class="hamburger" id="hamburger" aria-label="Toggle mobile menu" aria-expanded="false">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="mobile-menu" id="mobileMenu" role="menu">
+    <a href="#hero" role="menuitem">Home</a>
+    <a href="#services" role="menuitem">Services</a>
+    <a href="#plans" role="menuitem">Plans</a>
+    <a href="#portfolio" role="menuitem">Portfolio</a>
+    <a href="#about" role="menuitem">About</a>
+    <a href="#contact" role="menuitem">Contact</a>
+    <a href="#contact" class="nav-cta" role="menuitem">Get Your Website</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero" aria-label="Hero section">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-orb hero-orb-1"></div>
+  <div class="hero-orb hero-orb-2"></div>
+  <div class="hero-particles" id="heroParticles"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <span class="dot"></span>
+      Professional Websites &bull; Affordable Pricing &bull; Modern Design
+    </div>
+    <div class="hero-typing-wrap" aria-live="polite">
+      <span class="typing-text" id="typingText"></span><span class="cursor-blink" aria-hidden="true"></span>
+    </div>
+    <h1 class="hero-h1">Build Your <span class="highlight">Digital Presence</span> with WebCraft</h1>
+    <p class="hero-sub">Modern, responsive and professional websites designed to help your brand stand out online.</p>
+    <div class="hero-btns">
+      <a href="#contact" class="btn-primary">Get Started</a>
+      <a href="#plans" class="btn-secondary">View Plans</a>
+    </div>
+  </div>
+  <div class="hero-scroll-indicator" aria-hidden="true">
+    <span>Scroll</span>
+    <div class="scroll-arrow"></div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services" aria-label="Services">
+  <div class="container">
+    <div class="section-head center reveal">
+      <div class="section-tag">✦ What We Build</div>
+      <h2 class="section-title">Professional <span>Website Services</span></h2>
+      <p class="section-sub">From personal portfolios to full business websites — we craft every project with precision and care.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card reveal" style="transition-delay:0.1s">
+        <div class="service-icon">🎨</div>
+        <h3>Personal Websites</h3>
+        <p>Beautiful, modern websites crafted to showcase your identity, skills, and work professionally online.</p>
+        <div class="service-tags">
+          <span>Portfolio</span><span>Students</span><span>Freelancers</span><span>Creators</span><span>Resume</span>
+        </div>
+        <button class="btn-outline" onclick="goToContact('Simple Website — 10 USDT')">Get Started</button>
+      </div>
+      <div class="service-card reveal" style="transition-delay:0.2s">
+        <div class="service-icon" style="background:rgba(139,92,246,0.1);border-color:rgba(139,92,246,0.2);">⚡</div>
+        <h3>Professional Websites</h3>
+        <p>Premium design with advanced animations and interactive sections to build a powerful online presence.</p>
+        <div class="service-tags">
+          <span>Professionals</span><span>Agencies</span><span>Freelancers</span><span>Brands</span><span>Service Providers</span>
+        </div>
+        <button class="btn-outline" style="border-color:rgba(139,92,246,0.4);color:var(--accent2);" onclick="goToContact('Professional Website — 50 USDT')">Get Started</button>
+      </div>
+      <div class="service-card reveal" style="transition-delay:0.3s">
+        <div class="service-icon" style="background:rgba(6,182,212,0.1);border-color:rgba(6,182,212,0.2);">🏢</div>
+        <h3>Business Websites</h3>
+        <p>Complete business websites designed to establish a strong online presence and grow your brand.</p>
+        <div class="service-tags">
+          <span>Companies</span><span>Restaurants</span><span>Shops</span><span>Startups</span><span>Businesses</span>
+        </div>
+        <button class="btn-outline" style="border-color:rgba(6,182,212,0.4);color:var(--accent3);" onclick="goToContact('Business Website — 100 USDT')">Get Started</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLANS / PRICING -->
+<section id="plans" aria-label="Pricing plans">
+  <div class="container">
+    <div class="section-head center reveal">
+      <div class="section-tag">✦ Pricing</div>
+      <h2 class="section-title">Choose Your <span>Website Plan</span></h2>
+      <p class="section-sub">Transparent pricing with no hidden fees. Pick the plan that fits your needs and budget.</p>
+    </div>
+    <div class="pricing-grid" id="pricingGrid">
+      <!-- Cards rendered by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- PORTFOLIO -->
+<section id="portfolio" aria-label="Portfolio">
+  <div class="container">
+    <div class="section-head center reveal">
+      <div class="section-tag">✦ Portfolio</div>
+      <h2 class="section-title">See What <span>We Can Build</span></h2>
+      <p class="section-sub">Examples of the types of websites WebCraft builds for clients at every plan level.</p>
+    </div>
+    <div class="portfolio-grid">
+      <div class="portfolio-card reveal" style="transition-delay:0.1s">
+        <div class="portfolio-img-wrap">
+          <img src="1.jpg" alt="Simple Website example by WebCraft" loading="lazy" />
+          <div class="portfolio-overlay">
+            <button onclick="goToContact('Simple Website — 10 USDT')">Choose This Style</button>
+          </div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-badge badge-simple">Simple Website</div>
+          <h3>Clean Personal Website</h3>
+          <p>A clean, attractive design perfect for individuals, portfolios, and simple online presence.</p>
+        </div>
+      </div>
+      <div class="portfolio-card reveal" style="transition-delay:0.2s">
+        <div class="portfolio-img-wrap">
+          <img src="2.jpg" alt="Professional Website example by WebCraft" loading="lazy" />
+          <div class="portfolio-overlay">
+            <button onclick="goToContact('Professional Website — 50 USDT')">Choose This Style</button>
+          </div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-badge badge-pro">Professional Website</div>
+          <h3>Premium Professional Website</h3>
+          <p>Advanced design with animations, glassmorphism, and interactive sections for a strong impression.</p>
+        </div>
+      </div>
+      <div class="portfolio-card reveal" style="transition-delay:0.3s">
+        <div class="portfolio-img-wrap">
+          <img src="3.jpg" alt="Business Website example by WebCraft" loading="lazy" />
+          <div class="portfolio-overlay">
+            <button onclick="goToContact('Business Website — 100 USDT')">Choose This Style</button>
+          </div>
+        </div>
+        <div class="portfolio-info">
+          <div class="portfolio-badge badge-biz">Business Website</div>
+          <h3>Full Business Website</h3>
+          <p>A complete business solution with services, gallery, testimonials, FAQ, and WhatsApp integration.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about" aria-label="About WebCraft">
+  <div class="container">
+    <div class="about-grid">
+      <div class="about-visual reveal from-left">
+        <div class="about-card-main">
+          <img src="logo.jpg" alt="Hassan Shahid - WebCraft Owner" class="about-avatar" />
+          <h3>Hassan Shahid</h3>
+          <div class="role">Founder &amp; Developer — WebCraft</div>
+          <p>Passionate about crafting modern, responsive, and professional websites that genuinely help clients stand out online. Every project is built with care, attention to detail, and a focus on quality.</p>
+        </div>
+        <div class="about-floating">
+          <p>🌐 Available for new projects</p>
+        </div>
+      </div>
+      <div class="about-content reveal from-right">
+        <div class="section-tag">✦ About</div>
+        <h2>Why Choose <span>WebCraft?</span></h2>
+        <p>WebCraft is a professional web development brand focused on delivering high-quality websites that are modern, responsive, and built to perform. Every website is crafted with careful attention to design, user experience, and performance.</p>
+        <p>Whether you are an individual, a creator, a startup, or an established business — WebCraft provides the right solution at an affordable price, without compromising on quality.</p>
+        <div class="about-features">
+          <div class="about-feature"><span>✨</span> Modern Design</div>
+          <div class="about-feature"><span>📱</span> Fully Responsive</div>
+          <div class="about-feature"><span>⚡</span> Fast Loading</div>
+          <div class="about-feature"><span>🎯</span> Professional Quality</div>
+          <div class="about-feature"><span>👤</span> User-Friendly</div>
+          <div class="about-feature"><span>💰</span> Affordable Pricing</div>
+          <div class="about-feature"><span>🔍</span> SEO-Friendly</div>
+          <div class="about-feature"><span>🛠️</span> Clean Code</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section id="process" aria-label="How it works">
+  <div class="container">
+    <div class="section-head center reveal">
+      <div class="section-tag">✦ Process</div>
+      <h2 class="section-title">How It <span>Works</span></h2>
+      <p class="section-sub">A simple, transparent process from your first message to a live website.</p>
+    </div>
+    <div class="process-grid">
+      <div class="process-card reveal" style="transition-delay:0.1s">
+        <div class="process-num">01</div>
+        <div class="process-icon">💬</div>
+        <h3>Tell Us Your Idea</h3>
+        <p>Send your website requirements through WhatsApp. Describe your vision and what you need.</p>
+      </div>
+      <div class="process-card reveal" style="transition-delay:0.2s">
+        <div class="process-num">02</div>
+        <div class="process-icon">📋</div>
+        <h3>Choose Your Plan</h3>
+        <p>Select from the Simple, Professional, or Business plan based on your goals and budget.</p>
+      </div>
+      <div class="process-card reveal" style="transition-delay:0.3s">
+        <div class="process-num">03</div>
+        <div class="process-icon">🛠️</div>
+        <h3>We Build</h3>
+        <p>WebCraft designs and develops your website with precision, applying modern UI/UX principles.</p>
+      </div>
+      <div class="process-card reveal" style="transition-delay:0.4s">
+        <div class="process-num">04</div>
+        <div class="process-icon">🚀</div>
+        <h3>Launch</h3>
+        <p>Your finished website is prepared and ready for deployment to go live on the internet.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq" aria-label="Frequently asked questions">
+  <div class="container">
+    <div class="section-head center reveal">
+      <div class="section-tag">✦ FAQ</div>
+      <h2 class="section-title">Frequently Asked <span>Questions</span></h2>
+      <p class="section-sub">Answers to common questions about WebCraft's services and process.</p>
+    </div>
+    <div class="faq-list reveal">
+      <div class="faq-item">
+        <div class="faq-question" role="button" tabindex="0" aria-expanded="false">
+          <h4>How much does a website cost?</h4>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer"><p>WebCraft offers three plans starting from 10 USDT. The Simple Website plan is 10 USDT, the Professional Website plan is 50 USDT, and the Business Website plan is 100 USDT.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" role="button" tabindex="0" aria-expanded="false">
+          <h4>Can I request a custom design?</h4>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer"><p>Yes. Website design can be customized according to your requirements and selected plan. Simply describe your preferences when you send your requirements through WhatsApp.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" role="button" tabindex="0" aria-expanded="false">
+          <h4>Are the websites mobile-friendly?</h4>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer"><p>Yes. All websites built by WebCraft are designed to work correctly across desktop, tablet, and mobile devices, providing a great experience for every visitor.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" role="button" tabindex="0" aria-expanded="false">
+          <h4>How do I order a website?</h4>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer"><p>Choose the plan that suits you, then fill in the contact form on this page or click the WhatsApp button to send your requirements directly. Hassan Shahid will respond and guide you through the process.</p></div>
+      </div>
+      <div class="faq-item">
+        <div class="faq-question" role="button" tabindex="0" aria-expanded="false">
+          <h4>How do I contact WebCraft?</h4>
+          <div class="faq-icon">+</div>
+        </div>
+        <div class="faq-answer"><p>You can contact Hassan Shahid through WhatsApp at +92 319 6348518. You can also use the contact form on this page to send your details and requirements.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact" aria-label="Contact WebCraft">
+  <div class="container">
+    <div class="contact-grid">
+      <div class="contact-info reveal from-left">
+        <div class="section-tag">✦ Contact</div>
+        <h2>Let's Build Your <span>Website</span></h2>
+        <p>Tell us what you need and we'll help you choose the right website plan. Fill in the form and your message will be sent directly to WebCraft on WhatsApp.</p>
+        <div class="contact-details">
+          <div class="contact-detail">
+            <div class="icon">👤</div>
+            <div>
+              <strong>Hassan Shahid</strong>
+              <span>Founder &amp; Developer</span>
+            </div>
+          </div>
+          <a href="https://wa.me/923196348518" target="_blank" rel="noopener" class="contact-detail" style="display:flex;text-decoration:none;color:inherit;transition:var(--transition);">
+            <div class="icon">📱</div>
+            <div>
+              <strong>+92 319 6348518</strong>
+              <span>WhatsApp</span>
+            </div>
+          </a>
+        </div>
+      </div>
+      <div class="contact-form reveal from-right">
+        <div class="selected-plan-display" id="selectedPlanDisplay"></div>
+        <form id="contactForm" novalidate>
+          <div class="form-group">
+            <label for="formName">Your Name <span>*</span></label>
+            <input type="text" id="formName" placeholder="Enter your full name" required autocomplete="name" />
+          </div>
+          <div class="form-group">
+            <label for="formWhatsapp">WhatsApp Number <span>*</span></label>
+            <input type="tel" id="formWhatsapp" placeholder="+92 XXX XXXXXXX" required autocomplete="tel" />
+          </div>
+          <div class="form-group">
+            <label for="formEmail">Email <span style="color:var(--text3);font-weight:400;">(optional)</span></label>
+            <input type="email" id="formEmail" placeholder="your@email.com" autocomplete="email" />
+          </div>
+          <div class="form-group">
+            <label for="formPlan">Select Website Plan <span>*</span></label>
+            <select id="formPlan" required>
+              <option value="">— Choose a plan —</option>
+              <option value="Simple Website — 10 USDT">Simple Website — 10 USDT</option>
+              <option value="Professional Website — 50 USDT">Professional Website — 50 USDT</option>
+              <option value="Business Website — 100 USDT">Business Website — 100 USDT</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="formMessage">Website Requirements / Message <span>*</span></label>
+            <textarea id="formMessage" placeholder="Describe what you need for your website..." required></textarea>
+          </div>
+          <button type="submit" class="send-btn">
+            <span>📲</span> Send Message on WhatsApp
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer role="contentinfo">
+  <div class="footer-container">
+    <div class="footer-main">
+      <div class="footer-brand">
+        <div class="logo">
+          <img src="logo.jpg" alt="WebCraft Logo" />
+          <span>WebCraft</span>
+        </div>
+        <p>Crafting modern websites for the digital world. Professional, responsive, and affordable web development for everyone.</p>
+        <div class="footer-social">
+          <a href="https://wa.me/923196348518" target="_blank" rel="noopener" aria-label="WhatsApp">💬</a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Navigation</h4>
+        <ul>
+          <li><a href="#hero">Home</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#plans">Plans</a></li>
+          <li><a href="#portfolio">Portfolio</a></li>
+          <li><a href="#about">About</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <div class="footer-contact">
+          <a href="https://wa.me/923196348518" target="_blank" rel="noopener">
+            <span>📱</span> +92 319 6348518
+          </a>
+          <p style="color:var(--text2);font-size:0.85rem;display:flex;align-items:center;gap:8px;">
+            <span>👤</span> Hassan Shahid
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2026 WebCraft. All rights reserved.</p>
+      <button class="admin-link" id="adminSectionBtn" aria-label="Admin Section">Admin Section</button>
+    </div>
+  </div>
+</footer>
+
+<!-- FLOATING WHATSAPP -->
+<div class="whatsapp-float" role="complementary" aria-label="WhatsApp contact">
+  <a href="https://wa.me/923196348518" target="_blank" rel="noopener" class="whatsapp-btn" aria-label="Chat with WebCraft on WhatsApp">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+  </a>
+  <div class="wa-tooltip" aria-hidden="true">Chat with WebCraft</div>
+</div>
+
+<!-- ADMIN OVERLAY -->
+<div id="admin-overlay" role="dialog" aria-modal="true" aria-label="Admin Section">
+  <!-- Login shown by JS -->
+</div>
+
+<!-- ADMIN SUCCESS TOAST -->
+<div class="admin-success" id="adminSuccessToast">✓ Changes saved successfully!</div>
+
+<script>
+/* =============================================
+   DEFAULT DATA
+============================================= */
+const DEFAULT_DATA = {
+  ownerName: 'Hassan Shahid',
+  whatsapp: '+92 319 6348518',
+  heroHeading: 'Build Your Digital Presence with WebCraft',
+  heroDesc: 'Modern, responsive and professional websites designed to help your brand stand out online.',
+  aboutText: 'WebCraft is a professional web development brand focused on delivering high-quality websites that are modern, responsive, and built to perform. Every website is crafted with careful attention to design, user experience, and performance.',
+  plans: [
+    {
+      id: 'simple',
+      name: 'Simple Website',
+      price: '10',
+      currency: 'USDT',
+      desc: 'A clean and attractive website for individuals, portfolios and simple online presence.',
+      popular: false,
+      features: [
+        'Modern responsive design',
+        'Mobile-friendly layout',
+        'Up to 5 main sections',
+        'Professional homepage',
+        'About section',
+        'Contact section',
+        'Social media links',
+        'Basic animations',
+        'Smooth scrolling',
+        'Modern typography',
+        'Basic SEO structure',
+        'Fast-loading design',
+        'Deployment-ready files',
+        'One revision'
+      ]
+    },
+    {
+      id: 'professional',
+      name: 'Professional Website',
+      price: '50',
+      currency: 'USDT',
+      desc: 'A premium website with advanced design, animations and interactive sections for a stronger online presence.',
+      popular: true,
+      features: [
+        'Everything in Simple Website',
+        'Premium UI/UX design',
+        'Up to 8 main sections',
+        'Advanced animations',
+        'Scroll animations',
+        'Interactive elements',
+        'Typing effects',
+        'Hover effects',
+        'Modern glassmorphism effects',
+        'Responsive design',
+        'Contact/CTA sections',
+        'Social media integration',
+        'Better SEO structure',
+        'Performance optimization',
+        'Multiple revisions',
+        'Professional deployment-ready files'
+      ]
+    },
+    {
+      id: 'business',
+      name: 'Business Website',
+      price: '100',
+      currency: 'USDT',
+      desc: 'A complete professional business website designed to establish a strong online presence and present your business professionally.',
+      popular: false,
+      features: [
+        'Everything in Professional Website',
+        'Premium business-focused UI/UX',
+        'Multiple business sections',
+        'Services/products presentation',
+        'Business information section',
+        'Customer-focused CTA sections',
+        'Advanced interactive animations',
+        'Premium hover effects',
+        'Portfolio/gallery section',
+        'Testimonials section',
+        'FAQ section',
+        'Contact section',
+        'WhatsApp integration',
+        'Social media integration',
+        'Advanced responsive design',
+        'SEO-friendly structure',
+        'Performance optimization',
+        'Professional layout',
+        'Multiple revisions',
+        'Deployment assistance'
+      ]
+    }
+  ],
+  faqs: [
+    { q: 'How much does a website cost?', a: 'WebCraft offers three plans starting from 10 USDT.' },
+    { q: 'Can I request a custom design?', a: 'Yes. Website design can be customized according to your requirements and selected plan.' },
+    { q: 'Are the websites mobile-friendly?', a: 'Yes. Websites are designed to work across desktop, tablet and mobile devices.' },
+    { q: 'How do I order a website?', a: 'Choose a plan and send your requirements through WhatsApp.' },
+    { q: 'How do I contact WebCraft?', a: 'You can contact Hassan Shahid through WhatsApp at +92 319 6348518.' }
+  ]
+};
+
+/* =============================================
+   DATA MANAGER (localStorage)
+============================================= */
+function loadData() {
+  try {
+    const stored = localStorage.getItem('webcraftData');
+    if (stored) return JSON.parse(stored);
+  } catch(e) {}
+  return JSON.parse(JSON.stringify(DEFAULT_DATA));
+}
+function saveData(data) {
+  localStorage.setItem('webcraftData', JSON.stringify(data));
+}
+function resetData() {
+  localStorage.removeItem('webcraftData');
+  return JSON.parse(JSON.stringify(DEFAULT_DATA));
+}
+
+let siteData = loadData();
+
+/* =============================================
+   RENDER PRICING CARDS
+============================================= */
+function renderPricing() {
+  const grid = document.getElementById('pricingGrid');
+  if (!grid) return;
+  grid.innerHTML = siteData.plans.map((plan, i) => `
+    <div class="price-card ${plan.popular ? 'popular' : ''} reveal" style="transition-delay:${0.1*(i+1)}s">
+      ${plan.popular ? '<div class="popular-badge">⭐ Popular</div>' : ''}
+      <div class="price-card-top">
+        <h3>${escHtml(plan.name)}</h3>
+        <div class="price-amount">
+          <span class="amount">${escHtml(plan.price)}</span>
+          <span class="currency"> ${escHtml(plan.currency)}</span>
+        </div>
+        <p>${escHtml(plan.desc)}</p>
+      </div>
+      <ul class="price-features">
+        ${plan.features.map(f => `<li>${escHtml(f)}</li>`).join('')}
+      </ul>
+      <button class="plan-btn ${plan.popular ? 'primary' : 'secondary'}" onclick="goToContact('${escHtml(plan.name)} — ${escHtml(plan.price)} ${escHtml(plan.currency)}')">
+        Get ${escHtml(plan.name)}
+      </button>
+    </div>
+  `).join('');
+  observeReveal();
+}
+
+function escHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+
+/* =============================================
+   GO TO CONTACT WITH PLAN SELECTED
+============================================= */
+function goToContact(planValue) {
+  document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+  setTimeout(() => {
+    const sel = document.getElementById('formPlan');
+    if (sel) {
+      for (let i = 0; i < sel.options.length; i++) {
+        if (sel.options[i].value === planValue) { sel.selectedIndex = i; break; }
+      }
+      updateSelectedPlanDisplay();
+    }
+  }, 600);
+}
+
+function updateSelectedPlanDisplay() {
+  const sel = document.getElementById('formPlan');
+  const display = document.getElementById('selectedPlanDisplay');
+  if (!sel || !display) return;
+  if (sel.value) {
+    display.textContent = '✓ Selected Plan: ' + sel.value;
+    display.classList.add('show');
+  } else {
+    display.classList.remove('show');
+  }
+}
+
+/* =============================================
+   CONTACT FORM → WHATSAPP
+============================================= */
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.getElementById('contactForm');
+  const planSel = document.getElementById('formPlan');
+  if (planSel) planSel.addEventListener('change', updateSelectedPlanDisplay);
+
+  if (form) {
+    form.addEventListener('submit', e => {
+      e.preventDefault();
+      const name = document.getElementById('formName').value.trim();
+      const wa = document.getElementById('formWhatsapp').value.trim();
+      const email = document.getElementById('formEmail').value.trim();
+      const plan = document.getElementById('formPlan').value;
+      const msg = document.getElementById('formMessage').value.trim();
+
+      if (!name) { alert('Please enter your name.'); return; }
+      if (!wa) { alert('Please enter your WhatsApp number.'); return; }
+      if (!plan) { alert('Please select a website plan.'); return; }
+      if (!msg) { alert('Please enter your requirements.'); return; }
+
+      const ownerName = siteData.ownerName || 'Hassan Shahid';
+      const text = `Hello ${ownerName}, I want to create a website through WebCraft.\n\nName: ${name}\nWhatsApp: ${wa}\nEmail: ${email || 'Not provided'}\nSelected Plan: ${plan}\nRequirements: ${msg}`;
+      const waNum = (siteData.whatsapp || '+92 319 6348518').replace(/\D/g,'');
+      const url = `https://wa.me/${waNum}?text=${encodeURIComponent(text)}`;
+      window.open(url, '_blank');
+    });
+  }
+});
+
+/* =============================================
+   LOADING SCREEN
+============================================= */
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    const ls = document.getElementById('loading-screen');
+    if (ls) {
+      ls.classList.add('hidden');
+      setTimeout(() => { ls.style.display = 'none'; document.body.classList.remove('loading-active'); }, 700);
+    }
+  }, 2400);
+});
+
+/* =============================================
+   NAVBAR
+============================================= */
+const navbar = document.getElementById('navbar');
+const hamburger = document.getElementById('hamburger');
+const mobileMenu = document.getElementById('mobileMenu');
+
+window.addEventListener('scroll', () => {
+  if (window.scrollY > 60) navbar.classList.add('scrolled');
+  else navbar.classList.remove('scrolled');
+  updateActiveNav();
+}, { passive: true });
+
+hamburger.addEventListener('click', () => {
+  const open = hamburger.classList.toggle('open');
+  mobileMenu.classList.toggle('open', open);
+  hamburger.setAttribute('aria-expanded', open);
+});
+
+mobileMenu.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', () => {
+    hamburger.classList.remove('open');
+    mobileMenu.classList.remove('open');
+    hamburger.setAttribute('aria-expanded', false);
+  });
+});
+
+function updateActiveNav() {
+  const sections = ['hero','services','plans','portfolio','about','faq','contact'];
+  let current = 'hero';
+  sections.forEach(id => {
+    const el = document.getElementById(id);
+    if (el && window.scrollY >= el.offsetTop - 140) current = id;
+  });
+  document.querySelectorAll('.nav-links a').forEach(a => {
+    a.classList.toggle('active', a.getAttribute('href') === '#' + current);
+  });
+}
+
+/* =============================================
+   TYPING EFFECT
+============================================= */
+const phrases = ['We Build Websites','We Build Brands','We Build Digital Experiences','Your Website Starts Here'];
+let phraseIdx = 0, charIdx = 0, deleting = false;
+const typingEl = document.getElementById('typingText');
+
+function typeLoop() {
+  if (!typingEl) return;
+  const phrase = phrases[phraseIdx];
+  if (!deleting) {
+    typingEl.textContent = phrase.slice(0, ++charIdx);
+    if (charIdx === phrase.length) { deleting = true; setTimeout(typeLoop, 1800); return; }
+    setTimeout(typeLoop, 80);
+  } else {
+    typingEl.textContent = phrase.slice(0, --charIdx);
+    if (charIdx === 0) { deleting = false; phraseIdx = (phraseIdx + 1) % phrases.length; setTimeout(typeLoop, 400); return; }
+    setTimeout(typeLoop, 40);
+  }
+}
+setTimeout(typeLoop, 2800);
+
+/* =============================================
+   HERO PARTICLES
+============================================= */
+function createParticles() {
+  const container = document.getElementById('heroParticles');
+  if (!container) return;
+  const colors = ['rgba(59,130,246,0.6)','rgba(139,92,246,0.6)','rgba(6,182,212,0.6)'];
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 4 + 2;
+    p.style.cssText = `
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration:${Math.random()*12+8}s;
+      animation-delay:${Math.random()*10}s;
+    `;
+    container.appendChild(p);
+  }
+}
+createParticles();
+
+/* =============================================
+   SCROLL REVEAL
+============================================= */
+function observeReveal() {
+  const observer = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+  document.querySelectorAll('.reveal').forEach(el => {
+    if (!el.classList.contains('visible')) observer.observe(el);
+  });
+}
+observeReveal();
+
+/* =============================================
+   FAQ ACCORDION
+============================================= */
+document.querySelectorAll('.faq-question').forEach(q => {
+  q.addEventListener('click', () => {
+    const item = q.parentElement;
+    const open = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(i => { i.classList.remove('open'); i.querySelector('.faq-question').setAttribute('aria-expanded', false); });
+    if (!open) { item.classList.add('open'); q.setAttribute('aria-expanded', true); }
+  });
+  q.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); q.click(); } });
+});
+
+/* =============================================
+   CUSTOM CURSOR
+============================================= */
+const dot = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+let mx = 0, my = 0, rx = 0, ry = 0;
+let rafCursor;
+
+document.addEventListener('mousemove', e => { mx = e.clientX; my = e.clientY; if (dot) { dot.style.left = mx + 'px'; dot.style.top = my + 'px'; } });
+
+function animRing() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  if (ring) { ring.style.left = rx + 'px'; ring.style.top = ry + 'px'; }
+  rafCursor = requestAnimationFrame(animRing);
+}
+animRing();
+
+document.querySelectorAll('a,button,.faq-question,.portfolio-card,.service-card,.price-card').forEach(el => {
+  el.addEventListener('mouseenter', () => { if (ring) ring.classList.add('hovered'); if (dot) dot.style.transform = 'translate(-50%,-50%) scale(1.5)'; });
+  el.addEventListener('mouseleave', () => { if (ring) ring.classList.remove('hovered'); if (dot) dot.style.transform = 'translate(-50%,-50%) scale(1)'; });
+});
+
+/* =============================================
+   ADMIN SECTION
+============================================= */
+const ADMIN_USER = 'Hassan@5';
+const ADMIN_PASS = '@Hassan.Shahid.5';
+let adminLoggedIn = false;
+
+document.getElementById('adminSectionBtn').addEventListener('click', openAdmin);
+
+function openAdmin() {
+  const overlay = document.getElementById('admin-overlay');
+  overlay.classList.add('show');
+  if (adminLoggedIn) renderDashboard();
+  else renderLogin();
+  document.body.style.overflow = 'hidden';
+}
+
+function closeAdmin() {
+  const overlay = document.getElementById('admin-overlay');
+  overlay.classList.remove('show');
+  document.body.style.overflow = '';
+}
+
+function renderLogin() {
+  const overlay = document.getElementById('admin-overlay');
+  overlay.innerHTML = `
+    <div class="admin-login-box">
+      <button class="admin-close-btn" onclick="closeAdmin()" aria-label="Close admin">✕</button>
+      <h2>WebCraft <span>Admin</span></h2>
+      <p>Enter your credentials to access the admin panel.</p>
+      <div class="admin-error" id="adminError">Incorrect username or password.</div>
+      <form class="admin-form" id="adminLoginForm" novalidate>
+        <div class="form-group">
+          <label for="adminUser">Username</label>
+          <input type="text" id="adminUser" placeholder="Username" autocomplete="username" />
+        </div>
+        <div class="form-group">
+          <label for="adminPass">Password</label>
+          <input type="password" id="adminPass" placeholder="Password" autocomplete="current-password" />
+        </div>
+        <button type="submit" class="admin-btn">Login</button>
+      </form>
+      <p style="color:var(--text3);font-size:0.78rem;margin-top:18px;line-height:1.6;">⚠️ This is a frontend-only implementation. Credentials can be found in source code. For production use, implement server-side authentication.</p>
+    </div>
+  `;
+  document.getElementById('adminLoginForm').addEventListener('submit', e => {
+    e.preventDefault();
+    const u = document.getElementById('adminUser').value;
+    const p = document.getElementById('adminPass').value;
+    if (u === ADMIN_USER && p === ADMIN_PASS) {
+      adminLoggedIn = true;
+      renderDashboard();
+    } else {
+      document.getElementById('adminError').classList.add('show');
+    }
+  });
+}
+
+function renderDashboard() {
+  const overlay = document.getElementById('admin-overlay');
+  overlay.innerHTML = `
+    <div class="admin-dashboard">
+      <div class="admin-header">
+        <h1>WebCraft <span>Admin Panel</span></h1>
+        <div class="admin-header-btns">
+          <button class="admin-save-btn" id="adminSaveBtn">💾 Save Changes</button>
+          <button class="admin-reset-btn" id="adminResetBtn">↺ Reset to Default</button>
+          <button class="admin-logout-btn" id="adminLogoutBtn">Logout</button>
+        </div>
+      </div>
+      <div class="admin-notice">⚠️ <strong>Security Notice:</strong> This is a static frontend admin panel using localStorage. Credentials are stored in JavaScript source code and are accessible to anyone who inspects the page. For a real production website, use server-side authentication.</div>
+      <div class="admin-tabs">
+        <button class="admin-tab active" data-tab="plans">📋 Plans</button>
+        <button class="admin-tab" data-tab="general">⚙️ General</button>
+      </div>
+      <div class="admin-panel show" id="tab-plans">
+        ${renderPlanForms()}
+      </div>
+      <div class="admin-panel" id="tab-general">
+        ${renderGeneralForm()}
+      </div>
+    </div>
+  `;
+  // Tab switching
+  overlay.querySelectorAll('.admin-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      overlay.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+      overlay.querySelectorAll('.admin-panel').forEach(p => p.classList.remove('show'));
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('show');
+    });
+  });
+  document.getElementById('adminSaveBtn').addEventListener('click', adminSave);
+  document.getElementById('adminResetBtn').addEventListener('click', adminReset);
+  document.getElementById('adminLogoutBtn').addEventListener('click', () => {
+    adminLoggedIn = false;
+    renderLogin();
+  });
+}
+
+function renderPlanForms() {
+  return siteData.plans.map((plan, i) => `
+    <div class="admin-section-card">
+      <h3>${['🔵','⭐','🟣'][i]} ${escHtml(plan.name)}</h3>
+      <div class="admin-fields">
+        <div class="admin-field">
+          <label>Plan Name</label>
+          <input type="text" data-plan="${i}" data-field="name" value="${escHtml(plan.name)}" />
+        </div>
+        <div class="admin-field">
+          <label>Price</label>
+          <input type="text" data-plan="${i}" data-field="price" value="${escHtml(plan.price)}" />
+        </div>
+        <div class="admin-field">
+          <label>Currency</label>
+          <input type="text" data-plan="${i}" data-field="currency" value="${escHtml(plan.currency)}" />
+        </div>
+        <div class="admin-field">
+          <label>Description</label>
+          <textarea data-plan="${i}" data-field="desc">${escHtml(plan.desc)}</textarea>
+        </div>
+        <div class="admin-field">
+          <label>Features</label>
+          <div class="admin-features-list" id="features-${i}">
+            ${plan.features.map((f, fi) => `
+              <div class="admin-feature-item" data-fi="${fi}">
+                <input type="text" data-plan="${i}" data-fi="${fi}" value="${escHtml(f)}" />
+                <button class="remove-feature-btn" onclick="removeFeature(${i},${fi})">✕</button>
+              </div>
+            `).join('')}
+          </div>
+          <button class="add-feature-btn" onclick="addFeature(${i})">+ Add Feature</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderGeneralForm() {
+  return `
+    <div class="admin-section-card">
+      <h3>⚙️ General Settings</h3>
+      <div class="admin-fields">
+        <div class="admin-field">
+          <label>Owner Name</label>
+          <input type="text" id="adminOwnerName" value="${escHtml(siteData.ownerName)}" />
+        </div>
+        <div class="admin-field">
+          <label>WhatsApp Number</label>
+          <input type="text" id="adminWhatsapp" value="${escHtml(siteData.whatsapp)}" />
+        </div>
+        <div class="admin-field">
+          <label>Hero Heading</label>
+          <input type="text" id="adminHeroHeading" value="${escHtml(siteData.heroHeading)}" />
+        </div>
+        <div class="admin-field">
+          <label>Hero Description</label>
+          <textarea id="adminHeroDesc">${escHtml(siteData.heroDesc)}</textarea>
+        </div>
+        <div class="admin-field">
+          <label>About WebCraft Text</label>
+          <textarea id="adminAboutText">${escHtml(siteData.aboutText)}</textarea>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function addFeature(planIdx) {
+  siteData.plans[planIdx].features.push('New feature');
+  renderDashboard();
+  const overlay = document.getElementById('admin-overlay');
+  overlay.querySelectorAll('.admin-tab').forEach(t => {
+    if (t.dataset.tab === 'plans') t.click();
+  });
+}
+
+function removeFeature(planIdx, featureIdx) {
+  siteData.plans[planIdx].features.splice(featureIdx, 1);
+  renderDashboard();
+  const overlay = document.getElementById('admin-overlay');
+  overlay.querySelectorAll('.admin-tab').forEach(t => {
+    if (t.dataset.tab === 'plans') t.click();
+  });
+}
+
+function adminSave() {
+  // Collect plan fields
+  const overlay = document.getElementById('admin-overlay');
+  overlay.querySelectorAll('[data-plan]').forEach(el => {
+    const pi = parseInt(el.dataset.plan);
+    const field = el.dataset.field;
+    const fi = el.dataset.fi;
+    if (field) siteData.plans[pi][field] = el.value;
+    else if (fi !== undefined) siteData.plans[pi].features[parseInt(fi)] = el.value;
+  });
+  // Collect general fields
+  const ownerEl = document.getElementById('adminOwnerName');
+  const waEl = document.getElementById('adminWhatsapp');
+  const hhEl = document.getElementById('adminHeroHeading');
+  const hdEl = document.getElementById('adminHeroDesc');
+  const abEl = document.getElementById('adminAboutText');
+  if (ownerEl) siteData.ownerName = ownerEl.value;
+  if (waEl) siteData.whatsapp = waEl.value;
+  if (hhEl) siteData.heroHeading = hhEl.value;
+  if (hdEl) siteData.heroDesc = hdEl.value;
+  if (abEl) siteData.aboutText = abEl.value;
+  saveData(siteData);
+  applyDataToPage();
+  showAdminSuccess();
+}
+
+function adminReset() {
+  if (!confirm('Reset all changes to default? This cannot be undone.')) return;
+  siteData = resetData();
+  applyDataToPage();
+  renderDashboard();
+  showAdminSuccess('✓ Reset to defaults!');
+}
+
+function applyDataToPage() {
+  // Hero
+  document.querySelector('.hero-h1') && (document.querySelector('.hero-h1').innerHTML = `Build Your <span class="highlight">Digital Presence</span> with WebCraft`);
+  const heroSub = document.querySelector('.hero-sub');
+  if (heroSub) heroSub.textContent = siteData.heroDesc;
+  // About text
+  const aboutP = document.querySelector('.about-content p');
+  if (aboutP) aboutP.textContent = siteData.aboutText;
+  // WhatsApp link
+  const waNum = (siteData.whatsapp || '+92 319 6348518').replace(/\D/g,'');
+  document.querySelectorAll('a[href^="https://wa.me/"]').forEach(a => {
+    a.href = `https://wa.me/${waNum}`;
+  });
+  // Pricing
+  renderPricing();
+}
+
+function showAdminSuccess(msg) {
+  const toast = document.getElementById('adminSuccessToast');
+  if (!toast) return;
+  toast.textContent = msg || '✓ Changes saved successfully!';
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+/* =============================================
+   INITIAL RENDER
+============================================= */
+renderPricing();
+</script>
+</body>
+</html>
